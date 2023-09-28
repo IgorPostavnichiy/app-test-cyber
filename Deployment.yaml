@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+        - name: web-app
+          image: app.io/your-project/web-app-instance1:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: SECRET_PATH
+              value: /path/to/secret1 # first server
+            - name: SECRET_PATH
+              value: /path/to/secret2 # second server
+            - name: SECRET_PATH
+              value: /path/to/secret3 # third server
