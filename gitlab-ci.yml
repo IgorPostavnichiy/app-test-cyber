@@ -1,0 +1,26 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DOCKER_IMAGE_NAME: your-docker-image-name
+  K8S_NAMESPACE: your-kubernetes-namespace
+  K8S_DEPLOYMENT: web-app-instance1 
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  stage: build
+  script:
+    - docker build -t $DOCKER_IMAGE_NAME .
+    - docker push $DOCKER_IMAGE_NAME
+
+deploy:
+  stage: deploy
+  script:
+    - kubectl config set-cluster your-cluster-name --server=$K8S_CLUSTER_SERVER --certificate-authority=ca.crt
+    - kubectl config set-credentials your-cluster-name --token=$K8S_CLUSTER_TOKEN
+    - kubectl config set-context default-context --cluster=your-cluster-name --user=your-cluster-name
+    - kubectl config use-context default-context
+    - kubectl set image deployment/$K8S_DEPLOYMENT $K8S_DEPLOYMENT=$DOCKER_IMAGE_NAME -n $K8S_NAMESPACE
